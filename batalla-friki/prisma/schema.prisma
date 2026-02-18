@@ -1,0 +1,71 @@
+generator client {
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+generator client2 {
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma2"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[] 
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  roles     Role[] 
+
+  level     Int      @default(1)
+  xp        Int      @default(0)
+  wins      Int      @default(0)
+  losses    Int      @default(0)
+
+  battlesAsPlayer1 Battle[] @relation("Player1Battles")
+  battlesAsPlayer2 Battle[] @relation("Player2Battles")
+  wonBattles       Battle[] @relation("WonBattles")
+  battlesAsTurn    Battle[] @relation("TurnUser")
+}
+
+model Character {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  hp            Int      
+  attack        Int
+  level         Int      @default(1) 
+
+  usedAsPlayer1 Battle[] @relation("Player1Character")
+  usedAsPlayer2 Battle[] @relation("Player2Character")
+}
+
+model Battle {
+  id               Int      @id @default(autoincrement())
+  status           String   @default("WAITING")
+  
+  player1Id        Int
+  player2Id        Int?
+  player1CharId    Int
+  player2CharId    Int?
+  player1CurrentHp Int
+  player2CurrentHp Int?
+  turnUserId       Int?     
+  winnerId         Int?
+  createdAt        DateTime @default(now())
+  player1          User      @relation("Player1Battles", fields: [player1Id], references: [id])
+  player2          User?     @relation("Player2Battles", fields: [player2Id], references: [id])
+  turnUser         User?     @relation("TurnUser", fields: [turnUserId], references: [id])
+  winner           User?     @relation("WonBattles", fields: [winnerId], references: [id])
+  player1Char      Character @relation("Player1Character", fields: [player1CharId], references: [id])
+  player2Char      Character? @relation("Player2Character", fields: [player2CharId], references: [id])
+}

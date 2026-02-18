@@ -1,0 +1,93 @@
+// ==========================================
+// CONFIGURACIÓN
+// ==========================================
+
+generator client {
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+generator client2 {
+  provider     = "prisma-client-js"
+  output       = "../generated/prisma2"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// 1. SEGURIDAD Y USUARIOS
+// ==========================================
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  users User[]
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  name     String
+  roles    Role[]
+
+  level  Int @default(1)
+  xp     Int @default(0)
+  wins   Int @default(0)
+  losses Int @default(0)
+
+  // Estas relaciones necesitan su contraparte en Battle
+  battlesAsPlayer1 Battle[] @relation("Player1Battles")
+  battlesAsPlayer2 Battle[] @relation("Player2Battles")
+  wonBattles       Battle[] @relation("WonBattles")
+  battlesAsTurn    Battle[] @relation("TurnUser")
+}
+
+// ==========================================
+// 2. SISTEMA DE JUEGO
+// ==========================================
+
+model Character {
+  id     Int    @id @default(autoincrement())
+  name   String @unique // <--- AÑADE @unique AQUÍ
+  hp     Int
+  attack Int
+  level  Int    @default(1)
+
+  usedAsPlayer1 Battle[] @relation("Player1Character")
+  usedAsPlayer2 Battle[] @relation("Player2Character")
+}
+
+model Battle {
+  id     Int    @id @default(autoincrement())
+  status String @default("WAITING")
+
+  // IDs de campos
+  player1Id        Int
+  player2Id        Int?
+  player1CharId    Int
+  player2CharId    Int?
+  player1CurrentHp Int
+  player2CurrentHp Int?
+  turnUserId       Int?
+  winnerId         Int?
+  createdAt        DateTime @default(now())
+
+  // ==========================================
+  // RELACIONES (El "pegamento" que faltaba)
+  // ==========================================
+
+  // Relaciones con User
+  player1  User  @relation("Player1Battles", fields: [player1Id], references: [id])
+  player2  User? @relation("Player2Battles", fields: [player2Id], references: [id])
+  turnUser User? @relation("TurnUser", fields: [turnUserId], references: [id])
+  winner   User? @relation("WonBattles", fields: [winnerId], references: [id]) // CORRIGE ERROR 1
+
+  // Relaciones con Character
+  player1Char Character  @relation("Player1Character", fields: [player1CharId], references: [id]) // CORRIGE ERROR 2
+  player2Char Character? @relation("Player2Character", fields: [player2CharId], references: [id]) // CORRIGE ERROR 3
+}

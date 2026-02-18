@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batalla Friki - El Juego</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #111116;
+            --panel-bg: #1a1a24;
+            --border-gold: #d4af37;
+            --text-main: #e0e0e0;
+            --accent-red: #8b0000;
+            --accent-red-hover: #a50000;
+            --accent-blue: #0f4c75;
+            --accent-blue-hover: #1b6ca8;
+            --success-green: #28a745;
+            --xp-blue: #3498db;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-image: radial-gradient(circle at center, #1a1a24 0%, #000000 100%);
+        }
+
+        h1, h2, h3 { font-family: 'Cinzel', serif; color: var(--border-gold); text-align: center; }
+        header { padding: 40px 20px 20px; text-align: center; }
+        header h1 { font-size: 3.5rem; text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); margin-bottom: 5px; }
+        header p { color: #888; font-size: 1.2rem; }
+
+        .screen {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            display: none; 
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .screen.active { display: block; } 
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid #333;
+            border-top: 3px solid var(--border-gold);
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+
+        .auth-container { 
+            display: flex; 
+            gap: 40px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-top: 20px;
+        }
+
+        .auth-panel {
+            flex: 1;
+            min-width: 400px;
+            padding: 40px;
+        }
+
+        .auth-panel h2 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 20px; }
+        
+        input, select { 
+            padding: 15px;
+            background: #0d0d12; 
+            border: 1px solid #444; 
+            color: white; 
+            border-radius: 6px; 
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--border-gold);
+        }
+        
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3rem;
+            margin-top: 10px;
+        }
+
+        button { padding: 12px 20px; border: none; border-radius: 4px; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; color: white; transition: all 0.3s; text-transform: uppercase; }
+        .btn-primary { background-color: var(--accent-blue); }
+        .btn-primary:hover { background-color: var(--accent-blue-hover); }
+        .btn-danger { background-color: var(--accent-red); width: 100%; }
+
+        .battle-list { margin-top: 20px; border: 1px solid #333; border-radius: 4px; overflow: hidden; }
+        .battle-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #0d0d12; border-bottom: 1px solid #222; }
+
+        .log-box {
+            background: #050508;
+            border: 1px solid #333;
+            height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.95rem;
+        }
+        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #1a1a24; padding-bottom: 4px; }
+        .sys-msg { color: var(--border-gold); }
+
+        #notification { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 5px; color: white; transform: translateX(150%); transition: transform 0.3s; z-index: 1000; font-weight: bold; }
+        #notification.show { transform: translateX(0); }
+
+        .health-container { margin: 15px 0; text-align: left; }
+        .health-label { font-weight: bold; color: var(--border-gold); font-size: 0.9rem; display: block; margin-bottom: 5px; text-shadow: 1px 1px 2px black; }
+        .health-bar-bg { background: #333; height: 22px; border-radius: 11px; overflow: hidden; border: 1px solid #000; position: relative; }
+        .health-bar-fill { background: linear-gradient(90deg, #28a745, #5cd65c); height: 100%; width: 100%; transition: width 0.5s ease-in-out; }
+        .health-text { position: absolute; width: 100%; text-align: center; font-size: 0.8rem; font-weight: bold; color: white; line-height: 20px; z-index: 2; }
+        
+        #turn-indicator { font-family: 'Cinzel', serif; font-weight: bold; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center; border: 1px solid transparent; }
+        .my-turn { background: rgba(40, 167, 69, 0.15); color: #28a745; border-color: #28a745; }
+        .waiting-turn { background: rgba(139, 0, 0, 0.15); color: #ff4d4d; border-color: #8b0000; }
+
+        .stats-panel { display: flex; justify-content: space-around; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+        .stat-item { text-align: center; }
+        .stat-item small { display: block; color: #888; text-transform: uppercase; font-size: 0.7rem; }
+        .stat-item b { font-family: 'Cinzel', serif; color: var(--border-gold); font-size: 1.1rem; }
+
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; color: white; }
+        .admin-table th, .admin-table td { padding: 12px; border: 1px solid #333; text-align: left; }
+        .admin-table th { background: #000; color: var(--border-gold); font-family: 'Cinzel'; }
+        .btn-edit { background: #f39c12; font-size: 0.7rem; padding: 5px 10px; }
+        .btn-delete { background: #e74c3c; font-size: 0.7rem; padding: 5px 10px; }
+        .admin-badge { background: var(--border-gold); color: black; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+    <div id="notification">Mensaje</div>
+
+    <header>
+        <h1>⚔️ Batalla Friki</h1>
+        <p>Arena Multijugador en Salas</p>
+    </header>
+
+    <main id="screen-auth" class="screen active">
+        <div class="auth-container">
+            <div class="panel auth-panel">
+                <h2>Iniciar Sesión</h2>
+                <div class="form-group">
+                    <input type="email" id="login-email" placeholder="Correo electrónico">
+                    <input type="password" id="login-password" placeholder="Contraseña">
+                    <button class="btn-primary btn-auth" onclick="loguear()">Entrar a la Arena</button>
+                </div>
+            </div>
+            <div class="panel auth-panel">
+                <h2>Nuevo Héroe</h2>
+                <div class="form-group">
+                    <input type="text" id="reg-name" placeholder="Nombre de guerrero">
+                    <input type="email" id="reg-email" placeholder="Correo electrónico">
+                    <input type="password" id="reg-password" placeholder="Contraseña (mín. 6)">
+                    <button class="btn-primary btn-auth" onclick="registrar()" style="background-color: #4b2e83;">Crear Cuenta</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main id="screen-game" class="screen">
+        <div class="panel">
+            <div class="stats-panel">
+                <div class="stat-item">
+                    <small>Nivel</small>
+                    <b id="display-level">1</b>
+                </div>
+                <div class="stat-item">
+                    <small>XP</small>
+                    <b id="display-xp" style="color: var(--xp-blue);">0</b>
+                </div>
+                <div class="stat-item">
+                    <small>W / L</small>
+                    <b id="display-record">0 / 0</b>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h3 id="player-name" style="display: inline-block;"></h3>
+                    <span id="admin-badge" class="admin-badge" style="display: none;">ADMIN</span>
+                </div>
+                <div>
+                    <button id="btn-admin-toggle" onclick="toggleAdminPanel()" style="display: none; background: var(--border-gold); color: black; font-size: 0.7rem; margin-right: 10px;">Gestionar Personajes</button>
+                    <button onclick="cerrarSesion()" style="font-size: 0.7rem; background: #333; padding: 5px 10px;">Salir</button>
+                </div>
+            </div>
+            
+            <div id="section-lobby">
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+                    <h4>Modo PVP (Jugador vs Jugador)</h4>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <select id="select-character" style="flex: 2;"></select>
+                        <button class="btn-primary" onclick="crearPartida()" style="flex: 1; background: var(--success-green);">Crear Sala</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(40, 76, 117, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--accent-blue);">
+                    <h4>Modo PVE (Jugador vs Máquina)</h4>
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Entrena contra oponentes aleatorios.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-primary" onclick="crearPartidaPVE()" style="flex: 1; background: var(--accent-blue);">Luchar contra Bot</button>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h4>Salas Disponibles</h4>
+                        <button onclick="cargarBatallas()" style="font-size: 0.6rem; padding: 5px;">Actualizar 🔄</button>
+                    </div>
+                    <div id="battle-list" class="battle-list"></div>
+                </div>
+            </div>
+
+            <div id="section-admin" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>Panel de Control Real</h3>
+                    <button class="btn-danger" onclick="resetearTodosHP()" style="width: auto; font-size: 0.7rem;">Resetear HP Global</button>
+                </div>
+
+                <div class="panel" style="background: rgba(0,0,0,0.3);">
+                    <h4 id="admin-form-title">Añadir Nuevo Personaje</h4>
+                    <input type="hidden" id="admin-char-id">
+                    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <input type="text" id="admin-name" placeholder="Nombre (Ej. Thor)">
+                        <input type="number" id="admin-level" placeholder="Nivel desbloqueo">
+                        <input type="number" id="admin-hp" placeholder="Puntos de Vida">
+                        <input type="number" id="admin-attack" placeholder="Poder de Ataque">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button class="btn-primary" onclick="guardarPersonaje()" style="flex: 1;">Guardar Cambios</button>
+                        <button onclick="limpiarFormAdmin()" style="background: #444; flex: 1;">Cancelar / Limpiar</button>
+                    </div>
+                </div>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th><th>HP</th><th>ATQ</th><th>LVL</th><th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-characters-list"></tbody>
+                </table>
+            </div>
+
+            <div id="section-arena" style="display: none;">
+                <h2 id="battle-id-display" style="color: var(--accent-red); margin-bottom: 15px;">Duelo en curso</h2>
+                
+                <div id="turn-indicator">Cargando duelo...</div>
+
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <div class="health-container" style="flex: 1;">
+                        <span id="p1-name-label" class="health-label">Cargando...</span>
+                        <div class="health-bar-bg">
+                            <div id="p1-health-text" class="health-text">100/100</div>
+                            <div id="p1-health-bar" class="health-bar-fill"></div>
+                        </div>
+                    </div>
+                    <div class="health-container" style="flex: 1;">
+                        <span id="p2-name-label" class="health-label">Cargando...</span>
+                        <div class="health-bar-bg">
+                            <div id="p2-health-text" class="health-text">100/100</div>
+                            <div id="p2-health-bar" class="health-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn-danger" id="btn-attack" onclick="enviarAtaque()">¡Lanzar Ataque!</button>
+                <div class="log-box" id="battle-log"></div>
+                <button onclick="salirDeArena()" style="margin-top: 15px; background: #333; width: 100%;">Abandonar Batalla</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        let jwtToken = null, socket = null, currentUser = null, currentBattleId = null;
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('notification');
+            toast.textContent = message;
+            toast.style.backgroundColor = type === 'success' ? 'var(--success-green)' : 'var(--accent-red)';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function actualizarStatsUI(stats) {
+            document.getElementById('display-level').textContent = stats.level || 1;
+            document.getElementById('display-xp').textContent = stats.xp || 0;
+            document.getElementById('display-record').textContent = `${stats.wins || 0} / ${stats.losses || 0}`;
+        }
+
+        async function registrar() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            if(!name || !email || !password) return showToast('Rellena todos los campos', 'error');
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+                const data = await response.json();
+                if (response.ok || data.success) showToast('¡Registro completado!');
+                else showToast(data.message || 'Error', 'error');
+            } catch (e) { showToast('Servidor no responde', 'error'); }
+        }
+
+        async function loguear() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                if (response.ok || data.success) {
+                    jwtToken = data.accessToken || data.data.accessToken;
+                    currentUser = data.user || data.data.user;
+                    
+                    document.getElementById('player-name').textContent = `¡Salve, ${currentUser.name}!`;
+                    actualizarStatsUI(currentUser);
+                    
+                    if (currentUser.roles && currentUser.roles.includes('ADMIN')) {
+                        document.getElementById('admin-badge').style.display = 'inline-block';
+                        document.getElementById('btn-admin-toggle').style.display = 'inline-block';
+                    }
+
+                    await cargarPersonajes();
+                    iniciarSocket();
+                    showScreen('screen-game');
+                } else showToast('Credenciales inválidas', 'error');
+            } catch (e) { showToast('Error de conexión', 'error'); }
+        }
+
+        async function cargarPersonajes() {
+            try {
+                const res = await fetch(`${API_URL}/characters`);
+                const responseData = await res.json();
+                const lista = Array.isArray(responseData) ? responseData : responseData.data;
+                
+                const select = document.getElementById('select-character');
+                select.innerHTML = lista.map(p => {
+                    const isLocked = p.level > currentUser.level;
+                    return `
+                        <option value="${p.id}" ${isLocked ? 'disabled' : ''}>
+                            ${isLocked ? '🔒 ' : ''}${p.name} 
+                            (⚔️${p.attack} ❤️${p.hp}) 
+                            ${isLocked ? `[Nivel ${p.level}]` : ''}
+                        </option>
+                    `;
+                }).join('');
+
+                if (currentUser.roles.includes('ADMIN')) {
+                    const adminTable = document.getElementById('admin-characters-list');
+                    adminTable.innerHTML = lista.map(p => `
+                        <tr>
+                            <td>${p.name}</td><td>${p.hp}</td><td>${p.attack}</td><td>${p.level}</td>
+                            <td>
+                                <button class="btn-edit" onclick="prepararEdicion(${p.id}, '${p.name}', ${p.hp}, ${p.attack}, ${p.level})">Editar</button>
+                                <button class="btn-delete" onclick="eliminarPersonaje(${p.id})">Eliminar</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) { console.error("Error cargando personajes"); }
+        }
+
+        function toggleAdminPanel() {
+            const lobby = document.getElementById('section-lobby');
+            const admin = document.getElementById('section-admin');
+            const btn = document.getElementById('btn-admin-toggle');
+
+            if (admin.style.display === 'none') {
+                lobby.style.display = 'none';
+                admin.style.display = 'block';
+                btn.textContent = 'Volver al Lobby';
+                btn.style.background = '#333';
+                btn.style.color = 'white';
+            } else {
+                lobby.style.display = 'block';
+                admin.style.display = 'none';
+                btn.textContent = 'Gestionar Personajes';
+                btn.style.background = 'var(--border-gold)';
+                btn.style.color = 'black';
+            }
+        }
+
+        function prepararEdicion(id, name, hp, attack, level) {
+            document.getElementById('admin-char-id').value = id;
+            document.getElementById('admin-name').value = name;
+            document.getElementById('admin-hp').value = hp;
+            document.getElementById('admin-attack').value = attack;
+            document.getElementById('admin-level').value = level;
+            document.getElementById('admin-form-title').textContent = `Editando a ${name}`;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function limpiarFormAdmin() {
+            document.getElementById('admin-char-id').value = '';
+            document.getElementById('admin-name').value = '';
+            document.getElementById('admin-hp').value = '';
+            document.getElementById('admin-attack').value = '';
+            document.getElementById('admin-level').value = '';
+            document.getElementById('admin-form-title').textContent = 'Añadir Nuevo Personaje';
+        }
+
+        async function guardarPersonaje() {
+            const id = document.getElementById('admin-char-id').value;
+            const data = {
+                name: document.getElementById('admin-name').value,
+                hp: parseInt(document.getElementById('admin-hp').value),
+                attack: parseInt(document.getElementById('admin-attack').value),
+                level: parseInt(document.getElementById('admin-level').value)
+            };
+
+            const method = id ? 'PATCH' : 'POST';
+            const url = id ? `${API_URL}/characters/${id}` : `${API_URL}/characters`;
+
+            try {
+                const res = await fetch(url, {
+                    method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jwtToken}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (res.ok) {
+                    showToast(id ? 'Personaje actualizado' : 'Héroe creado con éxito');
+                    limpiarFormAdmin();
+                    await cargarPersonajes();
+                } else {
+                    const err = await res.json();
+                    showToast(err.message || 'Error al guardar', 'error');
+                }
+            } catch (e) { showToast('Error de red', 'error'); }
+        }
+
+        async function eliminarPersonaje(id) {
+            if (!confirm('¿Seguro que quieres borrar este personaje permanentemente?')) return;
+            try {
+                const res = await fetch(`${API_URL}/characters/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${jwtToken}` }
+                });
+                if (res.ok) {
+                    showToast('Personaje eliminado');
+                    await cargarPersonajes();
+                }
+            } catch (e) { showToast('No se pudo eliminar', 'error'); }
+        }
+
+        async function resetearTodosHP() {
+            if (!confirm('Esto curará a todos los personajes a 100 HP. ¿Continuar?')) return;
+            try {
+                const res = await fetch(`${API_URL}/characters/reset`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${jwtToken}` }
+                });
+                if (res.ok) {
+                    showToast('❤️ ¡Todos los personajes han sido curados!');
+                    await cargarPersonajes();
+                }
+            } catch (e) { showToast('Error al resetear', 'error'); }
+        }
+
+        function cargarBatallas() {
+            if (!socket) return;
+            socket.emit('get-battles', {}, (res) => {
+                if (res.status === 'ok') {
+                    const list = res.data;
+                    const container = document.getElementById('battle-list');
+                    container.innerHTML = list.length ? list.map(b => `
+                        <div class="battle-item">
+                            <span>Sala #${b.id} (${b.player1.name})</span>
+                            <button class="btn-primary" style="padding: 5px 15px;" onclick="unirseAPartida(${b.id})">Unirse</button>
+                        </div>
+                    `).join('') : '<p style="padding:20px; color:#666; text-align:center;">No hay salas abiertas.</p>';
+                }
+            });
+        }
+
+        function iniciarSocket() {
+            if (socket) return;
+            socket = io(API_URL);
+
+            socket.on('connect', () => cargarBatallas());
+            socket.on('lobby-update', () => cargarBatallas());
+
+            socket.on('attack-result', (data) => {
+                if (data.message) addLog(data.message);
+                
+                const soyP2 = Number(data.player2Id) === Number(currentUser.id);
+                const izqNombre = soyP2 ? data.p2Name : data.p1Name;
+                const izqChar   = soyP2 ? data.p2CharName : data.p1CharName;
+                const izqHp     = soyP2 ? data.player2Hp : data.player1Hp;
+                const izqMax    = soyP2 ? data.player2MaxHp : data.player1MaxHp;
+                const derNombre = soyP2 ? data.p1Name : data.p2Name;
+                const derChar   = soyP2 ? data.p1CharName : data.p2CharName;
+                const derHp     = soyP2 ? data.player1Hp : data.player2Hp;
+                const derMax    = soyP2 ? data.player1MaxHp : data.player2MaxHp;
+
+                if (izqNombre) {
+                    document.getElementById('p1-name-label').textContent = `${izqNombre} (${izqChar})`;
+                    document.getElementById('p2-name-label').textContent = `${derNombre} (${derChar})`;
+                }
+
+                if (izqHp !== undefined) {
+                    actualizarBarra('p1', izqHp, izqMax);
+                    actualizarBarra('p2', derHp, derMax);
+                }
+
+                if (data.message && (data.message.includes("encontrado") || data.message.includes("iniciada"))) {
+                    document.getElementById('section-lobby').style.display = 'none';
+                    document.getElementById('section-admin').style.display = 'none';
+                    document.getElementById('section-arena').style.display = 'block';
+                }
+
+                if (data.userStats) {
+                    if (data.userStats.level > currentUser.level) showToast(`⭐ ¡SUBIDA DE NIVEL! Nivel ${data.userStats.level}`, 'success');
+                    Object.assign(currentUser, data.userStats);
+                    actualizarStatsUI(currentUser);
+                    cargarPersonajes();
+                }
+
+                const btn = document.getElementById('btn-attack');
+                const indicator = document.getElementById('turn-indicator');
+                
+                if (data.nextTurnUserId !== undefined) {
+                    if (data.nextTurnUserId === currentUser.id) {
+                        btn.disabled = false;
+                        indicator.textContent = "⚔️ ¡ES TU TURNO! ATACA";
+                        indicator.className = "my-turn";
+                    } else if (data.nextTurnUserId === null) {
+                        btn.disabled = true;
+                        indicator.textContent = "COMBATE FINALIZADO";
+                        indicator.className = "";
+                    } else {
+                        btn.disabled = true;
+                        indicator.textContent = "⌛ ESPERANDO...";
+                        indicator.className = "waiting-turn";
+                    }
+                }
+
+                if (data.ko) {
+                    btn.disabled = true;
+                    indicator.textContent = "COMBATE FINALIZADO";
+                    indicator.className = "";
+                }
+            });
+        }
+
+        function actualizarBarra(prefix, current, max) {
+            const pct = Math.max(0, (current / max) * 100);
+            const fill = document.getElementById(`${prefix}-health-bar`);
+            const text = document.getElementById(`${prefix}-health-text`);
+            fill.style.width = pct + '%';
+            text.textContent = `${current}/${max}`;
+            if (pct < 30) fill.style.background = 'linear-gradient(90deg, #8b0000, #ff4d4d)';
+            else if (pct < 60) fill.style.background = 'linear-gradient(90deg, #d4af37, #ffd700)';
+            else fill.style.background = 'linear-gradient(90deg, #28a745, #5cd65c)';
+        }
+
+        function crearPartida() {
+            socket.emit('create-battle', { userId: currentUser.id, characterId: parseInt(document.getElementById('select-character').value) }, (res) => {
+                if (res.status === 'ok') {
+                    currentBattleId = res.battleId;
+                    document.getElementById('battle-id-display').textContent = `Partida #${res.battleId}`;
+                    showToast("Esperando oponente...");
+                } else showToast(res.msg, 'error');
+            });
+        }
+
+        function crearPartidaPVE() {
+            socket.emit('create-pve-battle', { userId: currentUser.id, characterId: parseInt(document.getElementById('select-character').value) }, (res) => {
+                if (res.status === 'ok') currentBattleId = res.battleId;
+                else showToast(res.msg, 'error');
+            });
+        }
+
+        function unirseAPartida(battleId) {
+            socket.emit('join-battle', { battleId, userId: currentUser.id, characterId: parseInt(document.getElementById('select-character').value) }, (res) => {
+                if (res.status === 'ok') {
+                    currentBattleId = battleId;
+                    document.getElementById('section-lobby').style.display = 'none';
+                    document.getElementById('section-arena').style.display = 'block';
+                } else showToast(res.msg, 'error');
+            });
+        }
+
+        function enviarAtaque() {
+            if (currentBattleId) socket.emit('attack-match', { battleId: currentBattleId, userId: currentUser.id });
+        }
+
+        function salirDeArena() {
+            document.getElementById('section-arena').style.display = 'none';
+            document.getElementById('section-lobby').style.display = 'block';
+            document.getElementById('battle-log').innerHTML = '';
+            cargarBatallas();
+        }
+
+        function addLog(msg, typeClass = '') {
+            const logBox = document.getElementById('battle-log');
+            const div = document.createElement('div');
+            div.className = `log-entry ${typeClass}`;
+            div.innerHTML = `<span class="log-time">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            logBox.prepend(div);
+        }
+
+        function cerrarSesion() { if (socket) socket.disconnect(); location.reload(); }
+    </script>
+</body>
+</html>
