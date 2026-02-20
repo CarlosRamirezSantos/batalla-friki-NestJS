@@ -4,7 +4,7 @@ Proyecto backend en NestJS con Prisma y cliente web simple en `client/index.html
 
 ## Requisitos
 
-- Node.js 18+ (recomendado 20+)
+- Node.js
 - Yarn
 - PostgreSQL
 
@@ -100,7 +100,5 @@ set API_URL=http://localhost:3000 && node test/e2e/helpers/run-tests.cjs
 ## Scripts útiles
 
 - `yarn start:dev`: backend en modo desarrollo
-- `yarn build`: compilar
-- `yarn start:prod`: ejecutar build
 - `yarn seed`: ejecutar seeds
 - `yarn test`: tests unitarios
