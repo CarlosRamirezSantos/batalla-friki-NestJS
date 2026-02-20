@@ -1,7 +1,5 @@
-async function seedRoles(prisma) {
-  console.log('🛡️ Creating base roles...');
-  
-  const roles = ['USER', 'ADMIN'];
+﻿async function seedRoles(prisma) {
+const roles = ['USER', 'ADMIN'];
 
   for (const roleName of roles) {
     await prisma.role.upsert({
@@ -10,8 +8,6 @@ async function seedRoles(prisma) {
       create: { name: roleName },
     });
   }
-  
-  console.log('✅ Roles created successfully.');
 }
 
 module.exports = { seedRoles };

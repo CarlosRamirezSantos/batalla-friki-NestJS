@@ -141,12 +141,12 @@ export class BattleService {
     if (isP1) p2Hp = Math.max(0, p2Hp - dmg);
     else p1Hp = Math.max(0, p1Hp - dmg);
 
-    let logMsg = `⚔️ ¡${isP1 ? 'Atacas' : 'El oponente ataca'}! Daño: ${dmg}`;
+    let logMsg = `¡${isP1 ? 'Atacas' : 'El oponente ataca'}! Daño: ${dmg}`;
 
     if (isPve && p2Hp > 0 && p1Hp > 0) {
       const mDmg = battle.player2Char.attack;
       p1Hp = Math.max(0, p1Hp - mDmg);
-      logMsg += ` | 🤖 Contraataque de ${battle.player2Char.name}: ${mDmg}`;
+      logMsg += ` | Contraataque de ${battle.player2Char.name}: ${mDmg}`;
     }
 
     const ko = p1Hp <= 0 || p2Hp <= 0;

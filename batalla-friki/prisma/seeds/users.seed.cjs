@@ -1,15 +1,13 @@
-const bcrypt = require('bcrypt');
+﻿const bcrypt = require('bcrypt');
 
 async function seedUsers(prisma) {
-  console.log('👥 Actualizando y creando usuarios...');
-
-  const plainPassword = '123456'; 
+const plainPassword = '123456'; 
   const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
   const users = [
     { 
       email: 'admin@batallafriki.com', 
-      name: 'Super Admin', 
+      name: 'Fernando', 
       role: 'ADMIN', 
       level: 99 
     },
@@ -43,11 +41,6 @@ async function seedUsers(prisma) {
       },
     });
   }
-
-  console.log('-----------------------------------------');
-  console.log('✅ Usuarios listos.');
-  console.log(`🔑 ADMIN: admin@batallafriki.com / ${plainPassword}`);
-  console.log('-----------------------------------------');
 }
 
 module.exports = { seedUsers };

@@ -21,16 +21,16 @@ model Role {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  name      String
-  roles     Role[] 
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  name     String
+  roles    Role[] 
 
-  level     Int      @default(1)
-  xp        Int      @default(0)
-  wins      Int      @default(0)
-  losses    Int      @default(0)
+  level    Int      @default(1)
+  xp       Int      @default(0)
+  wins     Int      @default(0)
+  losses   Int      @default(0)
 
   battlesAsPlayer1 Battle[] @relation("Player1Battles")
   battlesAsPlayer2 Battle[] @relation("Player2Battles")
@@ -39,11 +39,11 @@ model User {
 }
 
 model Character {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
-  hp            Int      
-  attack        Int
-  level         Int      @default(1) 
+  id     Int      @id @default(autoincrement())
+  name   String   @unique
+  hp     Int      
+  attack Int
+  level  Int      @default(1) 
 
   usedAsPlayer1 Battle[] @relation("Player1Character")
   usedAsPlayer2 Battle[] @relation("Player2Character")
@@ -62,10 +62,12 @@ model Battle {
   turnUserId       Int?     
   winnerId         Int?
   createdAt        DateTime @default(now())
-  player1          User      @relation("Player1Battles", fields: [player1Id], references: [id])
-  player2          User?     @relation("Player2Battles", fields: [player2Id], references: [id])
-  turnUser         User?     @relation("TurnUser", fields: [turnUserId], references: [id])
-  winner           User?     @relation("WonBattles", fields: [winnerId], references: [id])
-  player1Char      Character @relation("Player1Character", fields: [player1CharId], references: [id])
-  player2Char      Character? @relation("Player2Character", fields: [player2CharId], references: [id])
+
+  player1          User       @relation("Player1Battles", fields: [player1Id], references: [id], onDelete: Cascade)
+  player2          User?      @relation("Player2Battles", fields: [player2Id], references: [id], onDelete: Cascade)
+  turnUser         User?      @relation("TurnUser", fields: [turnUserId], references: [id], onDelete: Cascade)
+  winner           User?      @relation("WonBattles", fields: [winnerId], references: [id], onDelete: Cascade)
+  
+  player1Char      Character  @relation("Player1Character", fields: [player1CharId], references: [id], onDelete: Cascade)
+  player2Char      Character? @relation("Player2Character", fields: [player2CharId], references: [id], onDelete: Cascade)
 }

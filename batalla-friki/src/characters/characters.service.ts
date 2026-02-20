@@ -64,7 +64,7 @@ export class CharactersService {
     });
 
     return {
-      message: `⚔️ ${attacker.name} attacked ${target.name}, dealing ${attacker.attack} damage.`,
+      message: `${attacker.name} attacked ${target.name}, dealing ${attacker.attack} damage.`,
       targetStatus: updatedTarget,
     };
   }
@@ -74,6 +74,6 @@ export class CharactersService {
         data: { hp: 100 }
     });
 
-    return { message: '❤️ Todos los personajes han sido restaurados a su vida máxima estándar.' };
+    return { message: 'Todos los personajes han sido restaurados a su vida máxima estándar.' };
   }
 }

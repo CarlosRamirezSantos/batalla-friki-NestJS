@@ -1,7 +1,5 @@
-async function seedCharacters(prisma) {
-  console.log('⚔️ Creating characters from the greatest sagas...');
-
-  const characters = [
+﻿async function seedCharacters(prisma) {
+const characters = [
     { name: 'Gandalf', hp: 100, attack: 20, level: 1 },
     { name: 'Sauron', hp: 120, attack: 25, level: 1 },
     { name: 'Gollum', hp: 50, attack: 10, level: 1 },
@@ -34,8 +32,6 @@ async function seedCharacters(prisma) {
       create: char,
     });
   }
-
-  console.log('✅ 20 legendary characters are ready for battle (ID conflict resolved).');
 }
 
 module.exports = { seedCharacters };

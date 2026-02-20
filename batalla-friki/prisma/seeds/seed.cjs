@@ -1,4 +1,4 @@
-require('dotenv/config');
+﻿require('dotenv/config');
 
 const { PrismaPg } = require('@prisma/adapter-pg');
 const { PrismaClient } = require('../../generated/prisma2');
@@ -14,9 +14,7 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  console.log('🌱 Starting database seed...');
-
-  await prisma.battle.deleteMany({});
+await prisma.battle.deleteMany({});
   await prisma.character.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.role.deleteMany({});
@@ -24,13 +22,11 @@ async function main() {
   await seedRoles(prisma);
   await seedUsers(prisma);
   await seedCharacters(prisma);
-
-  console.log('🌱 Database seed completed');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Seed failed', e);
+    console.error('Seed failed', e);
   })
   .finally(async () => {
     await prisma.$disconnect();
