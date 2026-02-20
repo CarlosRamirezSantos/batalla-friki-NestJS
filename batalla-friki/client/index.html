@@ -123,19 +123,19 @@
     <main id="screen-auth" class="screen active">
         <div class="auth-container">
             <div class="panel auth-panel">
-                <h2>Iniciar Sesi?n</h2>
+                <h2>Iniciar Sesión</h2>
                 <div class="form-group">
-                    <input type="email" id="login-email" placeholder="Correo electr?nico">
-                    <input type="password" id="login-password" placeholder="Contrase?a">
+                    <input type="email" id="login-email" placeholder="Correo electrónico">
+                    <input type="password" id="login-password" placeholder="Contraseña">
                     <button class="btn-primary btn-auth" onclick="loguear()">Entrar a la Arena</button>
                 </div>
             </div>
             <div class="panel auth-panel">
-                <h2>Nuevo H?roe</h2>
+                <h2>Nuevo Héroe</h2>
                 <div class="form-group">
                     <input type="text" id="reg-name" placeholder="Nombre de guerrero">
-                    <input type="email" id="reg-email" placeholder="Correo electr?nico">
-                    <input type="password" id="reg-password" placeholder="Contrase?a (m?n. 6)">
+                    <input type="email" id="reg-email" placeholder="Correo electrónico">
+                    <input type="password" id="reg-password" placeholder="Contraseña (mín. 6)">
                     <button class="btn-primary btn-auth" onclick="registrar()" style="background-color: #4b2e83;">Crear Cuenta</button>
                 </div>
             </div>
@@ -162,10 +162,10 @@
             </div>
             
             <div id="section-lobby">
-                <button class="btn-primary" onclick="verRanking()" style="background: var(--border-gold); color: black; margin-bottom: 15px; width: 100%;">Ver Sal?n de la Fama (Ranking Top 10)</button>
+                <button class="btn-primary" onclick="verRanking()" style="background: var(--border-gold); color: black; margin-bottom: 15px; width: 100%;">Ver Salón de la Fama (Ranking Top 10)</button>
                 
                 <div id="ranking-panel" style="display: none; background: rgba(0,0,0,0.5); padding: 15px; border: 1px solid var(--border-gold); border-radius: 8px; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 10px;">Sal?n de la Fama</h3>
+                    <h3 style="margin-bottom: 10px;">Salón de la Fama</h3>
                     <table class="admin-table">
                         <thead><tr><th>Pos</th><th>Guerrero</th><th>Nivel</th><th>Victorias</th><th>Derrotas</th></tr></thead>
                         <tbody id="ranking-list"></tbody>
@@ -182,7 +182,7 @@
                 </div>
 
                 <div style="background: rgba(40, 76, 117, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid var(--accent-blue);">
-                    <h4>Modo PVE (Jugador vs M?quina)</h4>
+                    <h4>Modo PVE (Jugador vs Máquina)</h4>
                     <p style="font-size: 0.8rem; color: #888; margin-bottom: 10px;">Entrena contra oponentes aleatorios.</p>
                     <div style="display: flex; gap: 10px;">
                         <button class="btn-primary" onclick="crearPartidaPVE()" style="flex: 1; background: var(--accent-blue);">Luchar contra Bot</button>
@@ -192,7 +192,6 @@
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h4>Salas Disponibles</h4>
-                        <button onclick="cargarBatallas()" style="font-size: 0.6rem; padding: 5px;">Actualizar</button>
                     </div>
                     <div id="battle-list" class="battle-list"></div>
                 </div>
@@ -201,12 +200,12 @@
             <div id="section-admin" style="display: none;">
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; margin-top: 10px;">
-                    <h3>Gesti?n de Personajes</h3>
+                    <h3>Gestión de Personajes</h3>
                     <button class="btn-danger" onclick="resetearTodosHP()" style="width: auto; font-size: 0.7rem;">Resetear HP Global</button>
                 </div>
 
                 <div class="panel" style="background: rgba(0,0,0,0.3); padding: 20px;">
-                    <h4 id="admin-form-title">A?adir Nuevo Personaje</h4>
+                    <h4 id="admin-form-title">Añadir Nuevo Personaje</h4>
                     <input type="hidden" id="admin-char-id">
                     <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                         <input type="text" id="admin-name" placeholder="Nombre (Ej. Thor)">
@@ -227,18 +226,18 @@
 
                 <hr style="border: 1px solid #333; margin: 40px 0;">
 
-                <h3 style="margin-bottom: 15px;">Gesti?n de Usuarios</h3>
+                <h3 style="margin-bottom: 15px;">Gestión de Usuarios</h3>
 
                 <div class="panel" style="background: rgba(0,0,0,0.3); padding: 20px;">
-                    <h4 id="admin-user-form-title">A?adir Nuevo Usuario</h4>
+                    <h4 id="admin-user-form-title">Añadir Nuevo Usuario</h4>
                     <input type="hidden" id="admin-user-id">
                     <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
                         <input type="text" id="admin-user-name" placeholder="Nombre (Ej. Rey Friki)">
                         <input type="email" id="admin-user-email" placeholder="Email">
-                        <input type="password" id="admin-user-password" placeholder="Contrase?a (M?nimo 6)">
+                        <input type="password" id="admin-user-password" placeholder="Contraseña (Mínimo 6)">
                         <input type="number" id="admin-user-level" placeholder="Nivel actual">
                     </div>
-                    <p style="font-size: 0.75rem; color: #888; margin-top: 5px;">*Si editas un usuario, deja la contrase?a en blanco para no cambiarla.</p>
+                    <p style="font-size: 0.75rem; color: #888; margin-top: 5px;">*Si editas un usuario, deja la contraseña en blanco para no cambiarla.</p>
                     <div style="display: flex; gap: 10px; margin-top: 15px;">
                         <button class="btn-primary" onclick="guardarUsuario()" style="flex: 1; background: #8b008b;">Guardar Usuario</button>
                         <button onclick="limpiarFormUsuarioAdmin()" style="background: #444; flex: 1;">Limpiar</button>
@@ -273,7 +272,7 @@
                     </div>
                 </div>
 
-                <button class="btn-danger" id="btn-attack" onclick="enviarAtaque()">?Lanzar Ataque!</button>
+                <button class="btn-danger" id="btn-attack" onclick="enviarAtaque()">¡Lanzar Ataque!</button>
                 <div class="log-box" id="battle-log"></div>
                 <button onclick="salirDeArena()" style="margin-top: 15px; background: #333; width: 100%;">Abandonar Batalla</button>
             </div>
@@ -314,7 +313,7 @@
                     body: JSON.stringify({ name, email, password })
                 });
                 const data = await response.json();
-                if (response.ok || data.success) showToast('?Registro completado!');
+                if (response.ok || data.success) showToast('¡Registro completado!');
                 else showToast(data.message || 'Error', 'error');
             } catch (e) { showToast('Servidor no responde', 'error'); }
         }
@@ -332,7 +331,7 @@
                     jwtToken = data.accessToken || data.data.accessToken;
                     currentUser = data.user || data.data.user;
                     
-                    document.getElementById('player-name').textContent = `?Salve, ${currentUser.name}!`;
+                    document.getElementById('player-name').textContent = `Salve, ${currentUser.name}!`;
                     actualizarStatsUI(currentUser);
                     
                     if (currentUser.roles && currentUser.roles.includes('ADMIN')) {
@@ -343,8 +342,8 @@
                     await cargarPersonajes();
                     iniciarSocket();
                     showScreen('screen-game');
-                } else showToast('Credenciales inv?lidas', 'error');
-            } catch (e) { showToast('Error de conexi?n', 'error'); }
+                } else showToast('Credenciales inválidas', 'error');
+            } catch (e) { showToast('Error de conexión', 'error'); }
         }
        async function verRanking() {
             try {
@@ -353,14 +352,12 @@
                 });
                 const responseData = await res.json();
                 
-                // ?El truco antibloqueo del Interceptor!
                 const payload = responseData.data || responseData;
                 
                 if (res.ok && payload.status === 'ok') {
                     const rankingPanel = document.getElementById('ranking-panel');
                     const rankingList = document.getElementById('ranking-list');
                     
-                    // Asegurarnos de coger la lista de guerreros correcta
                     const listaGuerreros = payload.data || [];
                     
                     rankingList.innerHTML = listaGuerreros.map((user, index) => `
@@ -424,7 +421,7 @@
                 btn.textContent = 'Volver al Lobby';
                 btn.style.background = '#333';
                 btn.style.color = 'white';
-                cargarUsuarios(); // Cargamos la tabla de usuarios al entrar al panel
+                cargarUsuarios();
             } else {
                 lobby.style.display = 'block';
                 admin.style.display = 'none';
@@ -434,7 +431,6 @@
             }
         }
 
-        // --- CRUD PERSONAJES (ADMIN) ---
         function prepararEdicion(id, name, hp, attack, level) {
             document.getElementById('admin-char-id').value = id;
             document.getElementById('admin-name').value = name;
@@ -451,7 +447,7 @@
             document.getElementById('admin-hp').value = '';
             document.getElementById('admin-attack').value = '';
             document.getElementById('admin-level').value = '';
-            document.getElementById('admin-form-title').textContent = 'A?adir Nuevo Personaje';
+            document.getElementById('admin-form-title').textContent = 'Añadir Nuevo Personaje';
         }
 
         async function guardarPersonaje() {
@@ -472,7 +468,7 @@
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
-                    showToast(id ? 'Personaje actualizado' : 'H?roe creado con ?xito');
+                    showToast(id ? 'Personaje actualizado' : 'Héroe creado con éxito');
                     limpiarFormAdmin();
                     await cargarPersonajes();
                 } else {
@@ -483,7 +479,7 @@
         }
 
         async function eliminarPersonaje(id) {
-            if (!confirm('?Seguro que quieres borrar este personaje permanentemente?')) return;
+            if (!confirm('¿Seguro que quieres borrar este personaje permanentemente?')) return;
             try {
                 const res = await fetch(`${API_URL}/characters/${id}`, {
                     method: 'DELETE', headers: { 'Authorization': `Bearer ${jwtToken}` }
@@ -496,25 +492,23 @@
         }
 
         async function resetearTodosHP() {
-            if (!confirm('Esto curar? a todos los personajes. ?Continuar?')) return;
+            if (!confirm('Esto curará a todos los personajes. ¿Continuar?')) return;
             try {
                 const res = await fetch(`${API_URL}/characters/reset`, {
                     method: 'POST', headers: { 'Authorization': `Bearer ${jwtToken}` }
                 });
                 if (res.ok) {
-                    showToast('?Todos los personajes han sido curados!');
+                    showToast('¡Todos los personajes han sido curados!');
                     await cargarPersonajes();
                 }
             } catch (e) { showToast('Error al resetear', 'error'); }
         }
 
-        // --- CRUD USUARIOS (ADMIN) ---
         async function cargarUsuarios() {
             try {
                 const res = await fetch(`${API_URL}/users`, { headers: { 'Authorization': `Bearer ${jwtToken}` } });
                 const responseData = await res.json();
                 
-                // Desenvolvemos la caja del Interceptor
                 const lista = responseData.data || responseData;
                 
                 const adminTable = document.getElementById('admin-users-list');
@@ -536,7 +530,7 @@
             document.getElementById('admin-user-id').value = id;
             document.getElementById('admin-user-name').value = name;
             document.getElementById('admin-user-email').value = email;
-            document.getElementById('admin-user-password').value = ''; // Por seguridad no se carga
+            document.getElementById('admin-user-password').value = '';
             document.getElementById('admin-user-level').value = level;
             document.getElementById('admin-user-form-title').textContent = `Editando a ${name}`;
             document.getElementById('admin-user-form-title').scrollIntoView({ behavior: 'smooth' });
@@ -548,7 +542,7 @@
             document.getElementById('admin-user-email').value = '';
             document.getElementById('admin-user-password').value = '';
             document.getElementById('admin-user-level').value = '';
-            document.getElementById('admin-user-form-title').textContent = 'A?adir Nuevo Usuario';
+            document.getElementById('admin-user-form-title').textContent = 'Añadir Nuevo Usuario';
         }
 
         async function guardarUsuario() {
@@ -560,7 +554,7 @@
             };
             
             const pass = document.getElementById('admin-user-password').value;
-            if (pass) data.password = pass; // Solo enviamos la password si el admin ha escrito algo
+            if (pass) data.password = pass;
 
             const method = id ? 'PATCH' : 'POST';
             const url = id ? `${API_URL}/users/${id}` : `${API_URL}/users`;
@@ -572,7 +566,7 @@
                     body: JSON.stringify(data)
                 });
                 if (res.ok) {
-                    showToast(id ? 'Usuario actualizado' : 'Usuario creado con ?xito');
+                    showToast(id ? 'Usuario actualizado' : 'Usuario creado con éxito');
                     limpiarFormUsuarioAdmin();
                     await cargarUsuarios();
                 } else {
@@ -583,7 +577,7 @@
         }
 
         async function eliminarUsuario(id) {
-            if (!confirm('?Seguro que quieres BORRAR a este usuario? Esto no se puede deshacer.')) return;
+            if (!confirm('¿Seguro que quieres BORRAR a este usuario? Esto no se puede deshacer.')) return;
             try {
                 const res = await fetch(`${API_URL}/users/${id}`, {
                     method: 'DELETE', headers: { 'Authorization': `Bearer ${jwtToken}` }
@@ -595,23 +589,25 @@
             } catch (e) { showToast('No se pudo eliminar', 'error'); }
         }
 
-        // ==========================================
-        // ==========================================
-
         async function cargarBatallas() {
             try {
                 const res = await fetch(`${API_URL}/battles`, { headers: { 'Authorization': `Bearer ${jwtToken}` }});
                 const responseData = await res.json();
-                
-                if (responseData.status === 'ok') {
-                    const list = responseData.data;
-                    const container = document.getElementById('battle-list');
+
+                const payload = responseData.data || responseData;
+                const status = payload?.status;
+                const list = payload?.data || [];
+                const container = document.getElementById('battle-list');
+
+                if (status === 'ok') {
                     container.innerHTML = list.length ? list.map(b => `
                         <div class="battle-item">
                             <span>Sala #${b.id} (${b.player1.name})</span>
                             <button class="btn-primary" style="padding: 5px 15px;" onclick="unirseAPartida(${b.id})">Unirse</button>
                         </div>
                     `).join('') : '<p style="padding:20px; color:#666; text-align:center;">No hay salas abiertas.</p>';
+                } else {
+                    container.innerHTML = '<p style="padding:20px; color:#666; text-align:center;">No hay salas abiertas.</p>';
                 }
             } catch (e) { console.error("Error cargando salas HTTP"); }
         }
@@ -652,8 +648,8 @@
                     document.getElementById('section-arena').style.display = 'block';
                 }
 
-                if (data.userStats) {
-                    if (data.userStats.level > currentUser.level) showToast(`?SUBIDA DE NIVEL! Nivel ${data.userStats.level}`, 'success');
+                if (data.userStats && Number(data.userStatsUserId) === Number(currentUser.id)) {
+                    if (data.userStats.level > currentUser.level) showToast(`¡SUBIDA DE NIVEL! Nivel ${data.userStats.level}`, 'success');
                     Object.assign(currentUser, data.userStats);
                     actualizarStatsUI(currentUser);
                     cargarPersonajes();
@@ -665,7 +661,7 @@
                 if (data.nextTurnUserId !== undefined) {
                     if (data.nextTurnUserId === currentUser.id) {
                         btn.disabled = false;
-                        indicator.textContent = "?ES TU TURNO! ATACA";
+                        indicator.textContent = "¡ES TU TURNO! ATACA";
                         indicator.className = "my-turn";
                     } else if (data.nextTurnUserId === null) {
                         btn.disabled = true;

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 interface UserStatsUpdate {
@@ -167,6 +167,7 @@ export class BattleService {
       });
 
       let userStats: UserStatsUpdate | null = null;
+      let userStatsUserId: number | null = null;
 
       if (ko) {
         if (winnerId === battle.player1Id) {
@@ -181,6 +182,7 @@ export class BattleService {
 
         const updatedUser = await tx.user.findUnique({ where: { id: attackerUserId } });
         if (updatedUser) {
+          userStatsUserId = updatedUser.id;
           userStats = {
             xp: updatedUser.xp,
             level: updatedUser.level,
@@ -198,6 +200,7 @@ export class BattleService {
         player1MaxHp: battle.player1Char.hp,
         player2MaxHp: battle.player2Char?.hp || 0,
         nextTurnUserId: nextTurnId,
+        userStatsUserId,
         userStats 
       };
     });
@@ -233,5 +236,19 @@ export class BattleService {
         data: { losses: { increment: 1 } }
       });
     }
+  }
+
+  async getWaitingBattles() {
+    const battles = await this.prisma.battle.findMany({
+      where: { 
+        status: 'WAITING', 
+        mode: 'PVP' 
+      },
+      select: {
+        id: true,
+        initiatorUser: { select: { name: true } } 
+      }
+    });
+    return { status: 'ok', data: battles };
   }
 }
